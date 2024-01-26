@@ -101,7 +101,7 @@ plot_ly(combined_data,
 
 ## Texts --------------------------------------------------
 # Social Info
-social_caption <-  socialcap::socialcap(gitname = "gaba-tope", textfont = "roboto",
+social_caption <-  socialcap::socialcap(gitname = "gaba-tope", textfont = "notosans",
                                         iconpath = "./Font-Awesome-6-Brands-Regular-400.otf")
 # Map Plot Text
 title_map <- "2023년 서울특별시 행정동별 평균 소득"
@@ -244,8 +244,43 @@ seoul_plot <-   ggplot()+
     fill = legend_map)+
   map_theme
 
+seoul_plot 
+
 ggsave(file="seoul_plot.png", plot = seoul_plot, width = 2000, height= 1400, 
        units = 'px', dpi = 300)
+
+# 3D map?---------
+seoul_plot_3d <-   ggplot()+
+  geom_sf(data = combined_data, aes(fill = mean_income), color = major_grid_col, linewidth = 0.1)+
+  geom_sf(data = map_seoul_gu, color = text_col, alpha = 0 )+
+  scale_fill_distiller(palette = "Purples", direction = 1, labels = scales::label_comma(),
+                       limits = c(2000000, 7500000), breaks = seq(2000000, 7500000, 1000000))+
+  geom_sf_text(data = map_seoul_gu,
+               aes(label = ifelse(!(SIG_KOR_NM %in% c("양천구", "강남구", "동작구", "성북구")), SIG_KOR_NM, "")), 
+               colour = "black")+ # "양천구" text overlaps with the border. "강남구" text is on dark bg.
+  #  "동작구" and "성북구" not centered. 
+  geom_sf_text_repel(data = map_seoul_gu, aes(label = ifelse(SIG_KOR_NM == "양천구", SIG_KOR_NM, "")), 
+                     colour = "black", nudge_x = -10, nudge_y = -10 # 양천구
+  )+
+  geom_sf_text_repel(data = map_seoul_gu, aes(label = ifelse(SIG_KOR_NM == "강남구",  SIG_KOR_NM, "")),
+                     colour = "black", nudge_x = -30 , nudge_y = +20
+  )+ # 강남구
+  geom_sf_text_repel(data = map_seoul_gu, aes(label = ifelse(SIG_KOR_NM == "동작구",  SIG_KOR_NM, "")),
+                     colour = "black", nudge_x = 0 , nudge_y = +30
+  )+ # 동작구
+  geom_sf_text_repel(data = map_seoul_gu, aes(label = ifelse(SIG_KOR_NM == "성북구",  SIG_KOR_NM, "")),
+                     colour = "black", nudge_x = -10 , nudge_y = -20
+  )
+
+ # 성북구
+  labs(title = title_map,
+       caption = cap_map,
+       fill = legend_map)+
+  map_theme
+plot_gg(seoul_plot_3d, width = 10, height = 10,
+        height_aes = "fill", multicore = T, scale = 250, zoom = 0.7, theta = 10,
+        phi = 30, windowsize = c(1200, 1200))
+
 
 # Interactive Map with {ggiraph}------------------------------
 seoul_plot_int <-   ggplot()+
