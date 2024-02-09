@@ -76,17 +76,6 @@ map_seoul_gu <- sf::st_set_crs(map_seoul_gu, 5179) #5179
 # Seoul River polygon Data
 map_river <- st_read("./Shapes/LSMD_CONT_UJ201_11_202401.shp", options = "ENCODING=euc-kr")
 
-
-
-
-ggplot() +
-  geom_sf(data = map_seoul_gu) +
-  geom_sf(data = map_seoul) +
-  geom_sf(data = map_river, fill = river_col, alpha = 0.7) + 
-  theme_minimal()
-
-
-
 # Convert sf data to geojson? (Undergoing)---------
 library(geojsonsf)
 geo_dong <- sf_geojson(map_seoul)
