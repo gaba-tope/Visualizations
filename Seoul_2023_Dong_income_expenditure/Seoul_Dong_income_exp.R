@@ -8,7 +8,6 @@ library(ggsflabel) # devtools::install_github("yutannihilation/ggsflabel")
 library(sf) # import and use .shp file
 library(shiny)
 library(ggiraph) # Interactive plot
-library(rayshader)
 library(plotly)
 options(scipen = 999) # Disable scientific notation.
 
@@ -16,8 +15,6 @@ options(scipen = 999) # Disable scientific notation.
 font_add_google(name = "Nanum Gothic", family = "nanum")
 font_add_google(name = "Noto Sans KR", family = "notosans")
 font_add_google(name = "Roboto", family = "roboto")
-sysfonts::font_add(family = "Font Awesome 6 Brands", # Social media icon fonts
-                   regular = "Font-Awesome-6-Brands-Regular-400.otf")
 showtext_auto()
 
 main_font <- "notosans"
@@ -30,6 +27,7 @@ text_col <- "grey10"
 lighter_text_col <- "#7d7d7d"
 major_grid_col <- "#bebebe"
 minor_grid_col <- "#d6d6d6"
+river_col <- "#56B4E9" 
 
 ## Data Import---------------------------------------------
 raw_seoul <- read.csv("./Seoul_income_expendit_dong.csv",fileEncoding = "euc-kr") #https://data.seoul.go.kr/dataList/OA-22168/S/1/datasetView.do
@@ -61,7 +59,9 @@ seoul_20231_updated[nrow(seoul_20231_updated), 17] <- "1174052600"
 
 
 # Seoul Dong polygon Data
-map_seoul <- st_read("./TL_SCCO_GEMD.shp", options = "ENCODING=euc-kr") # Data last updated in 2022-11
+map_seoul <- st_read("./Shapes/TL_SCCO_GEMD.shp", options = "ENCODING=euc-kr") # Data last updated in 2022-11
+map_seoul<- sf::st_set_crs(map_seoul, 5179) #5179
+
 EMD_CD_coded <- ddply(map_seoul, .(EMD_CD), function(row){
                           row$dong_code <- (gsub('.{2}$', "", row$EMD_CD))
                           })
@@ -70,9 +70,24 @@ combined_data <- left_join(map_seoul, seoul_20231_updated, by = "EMD_CD") # The 
 combined_data |> filter(is.na(dong_code)) 
 
 # Seoul Gu polygon Data
-map_seoul_gu <- st_read("./TL_SCCO_SIG.shp", options = "ENCODING=euc-kr")# Map at 2022-11
+map_seoul_gu <- st_read("./Shapes/TL_SCCO_SIG.shp", options = "ENCODING=euc-kr")# Map at 2022-11
+map_seoul_gu <- sf::st_set_crs(map_seoul_gu, 5179) #5179
 
-# Convert sf data to geojson?
+# Seoul River polygon Data
+map_river <- st_read("./Shapes/LSMD_CONT_UJ201_11_202401.shp", options = "ENCODING=euc-kr")
+
+
+
+
+ggplot() +
+  geom_sf(data = map_seoul_gu) +
+  geom_sf(data = map_seoul) +
+  geom_sf(data = map_river, fill = river_col, alpha = 0.7) + 
+  theme_minimal()
+
+
+
+# Convert sf data to geojson? (Undergoing)---------
 library(geojsonsf)
 geo_dong <- sf_geojson(map_seoul)
 str(geo_dong)
@@ -101,8 +116,7 @@ plot_ly(combined_data,
 
 ## Texts --------------------------------------------------
 # Social Info
-social_caption <-  socialcap::socialcap(gitname = "gaba-tope", textfont = "notosans",
-                                        iconpath = "./Font-Awesome-6-Brands-Regular-400.otf")
+social_caption <-  socialcap::socialcap(gitname = "gaba-tope", textfont = "notosans")
 # Map Plot Text
 title_map <- "2023년 서울특별시 행정동별 평균 소득"
 data_info <- "서울특별시 상권분석서비스 (소득소비) (2023-11-13)"
@@ -219,10 +233,11 @@ map_int_theme <- theme(
 ## Plots --------------------------------------------------
 # Designed Map w/ {ggplot2} ----------------------------------
 seoul_plot <-   ggplot()+
-  geom_sf(data = combined_data, aes(fill = mean_income), color = major_grid_col, linewidth = 0.1)+
-  geom_sf(data = map_seoul_gu, color = text_col, alpha = 0 )+
+  geom_sf(data = combined_data, aes(fill = mean_income), color = major_grid_col, linewidth = 0.1) +
+  geom_sf(data = map_seoul_gu, color = text_col, alpha = 0) +
+  #geom_sf(data = map_river, fill = river_col, color = river_col, alpha = 0.3) +
   scale_fill_distiller(palette = "Purples", direction = 1, labels = scales::label_comma(),
-                       limits = c(2000000, 7500000), breaks = seq(2000000, 7500000, 1000000))+
+                       limits = c(2000000, 7500000), breaks = seq(2000000, 7500000, 1000000)) +
   geom_sf_text(data = map_seoul_gu,
                 aes(label = ifelse(!(SIG_KOR_NM %in% c("양천구", "강남구", "동작구", "성북구")), SIG_KOR_NM, "")), 
                 colour = "black")+ # "양천구" text overlaps with the border. "강남구" text is on dark bg.
