@@ -10,4 +10,4 @@
 ---
 
 데이터는 [통계청 인구총조사 데이터](https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1PH2011&conn_path=I2)를 출처로 합니다.
-데이터에 관한 추가 정보는 위의 링크 및 [Data Source.md](Data Source.md)에서 볼 수 있습니다.
+데이터에 관한 추가 정보는 위의 링크 및 [Data Source.md](https://github.com/gaba-tope/Visualizations/blob/b2da9e7da3349faa11a9a9c9819ff9165becb9a7/companion_animals/Data%20Source.md)에서 볼 수 있습니다.
