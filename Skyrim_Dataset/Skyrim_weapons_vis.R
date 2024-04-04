@@ -75,8 +75,6 @@ bg_img <- readJPEG("./samsommer_mount_unsplash.jpg")
 bg_img_p <- writePNG(bg_img)
 bg_img_pr <- readPNG(bg_img_p)
 
-
-
 if (!(dim(bg_img_pr)[3] == 4)) {
   # Create an alpha layer with full opacity (1)
   alpha_layer <- array(1, dim = c(dim(bg_img_pr)[1], dim(bg_img_pr)[2]))
