@@ -4,7 +4,7 @@
 ---
 
 <p align="center">
-  <img src="/companion_animals/waffle_c.png" width="80%">
+  <img src="/companion_animals/waffle_c.png" width="60%">
   <img src="/companion_animals/waffle.png" width="80%">
 </p>
 
