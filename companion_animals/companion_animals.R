@@ -139,6 +139,41 @@ main_theme <- theme(
                                       margin = margin(t = 10, l = 73, b = -1))
 )
 
+theme_w2 <- theme(
+  plot.title.position = "plot", # plot title 기본 위치가 plot 바로 위.
+  plot.caption.position = "plot",# plot title 기본 위치가 plot 바로 아래.
+  plot.background = element_rect(fill = bg_col, colour = bg_col),
+  panel.background = element_rect(fill = bg_col, colour = bg_col),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  plot.margin = margin(10, 10, 10, 10),
+  plot.title = element_textbox_simple(
+    colour= text_col,
+    face = "bold",
+    family = main_font,
+    lineheight = 0.5,
+    size = 27,
+    margin = margin(b = 5, t = 2) 
+  ),
+  plot.subtitle = element_textbox_simple(
+    colour= text_col,
+    family = main_font,
+    face = "bold",
+    lineheight = 0.5,
+    size = 20,
+    margin = margin(b = 3, t = 2) 
+  ),
+  plot.caption = element_textbox_simple(
+    colour= text_col,
+    lineheight = 1.2,
+    family = main_font,
+    margin = margin(t = 5, b = 5, l = 5),
+    size = 15
+  ),
+  axis.text = element_blank(),
+  axis.ticks = element_blank()
+)
+
 
 # Plot1: w vs. w/o dog or cat --------------------
 plot_waffle <- ggplot(data = tib_waffle, 
@@ -211,7 +246,7 @@ plot_waffle_combine <- ggplot(data = tib_waffle2,
   labs(title = title,
        subtitle = subtitle,
        caption = caption2) +
-  main_theme
+  theme_w2
 
 plot_waffle_combine
 
@@ -222,8 +257,8 @@ ggsave(
   plot = plot_waffle_combine,
   device = "svg",
   units = "px",
-  width = 2800,
-  height = 3000,
+  width = 2600,
+  height = 2800,
   dpi = 290
 )
 
