@@ -29,14 +29,16 @@ d_f <- data |>
   dplyr::filter(`HouseType` == "계") |> 
   rowwise() |> 
   mutate(total_dog = SingleDog + MultiDogCat + MultiDogEtc + MultiDogCatEtc,
-         total_cat = SingleCat + MultiDogCat + MultiCatEtc + MultiDogCatEtc) |> 
+         total_cat = SingleCat + MultiDogCat + MultiCatEtc + MultiDogCatEtc,
+         total_etc = SingleEtc + MultiDogEtc + MultiCatEtc + MultiDogCatEtc) |> 
   mutate(dog_per_100 = (total_dog/HouseTotal)*100,
          cat_per_100 = (total_cat/HouseTotal)*100,
+         etc_per_100 = (total_etc/HouseTotal)*100,
          animal_per_100 = (HouseWAnimals/HouseTotal)*100)
 # To see if there is a NA
 complete.cases(d_f)
 
-# tibble for waffle plot
+# tibble for waffle plot1
 tib_waffle <- d_f |> 
   select(District, dog_per_100, cat_per_100) |> 
   filter(District == "전국") |> 
@@ -45,6 +47,15 @@ tib_waffle <- d_f |>
   pivot_longer(cols = !District)
 
 tib_waffle$animal <- c("dog", "cat", "dog", "cat")
+
+# tibble for waffle plot2
+tib_waffle2 <- d_f |> 
+  select(District, dog_per_100, cat_per_100, etc_per_100) |> 
+  filter(District == "전국") |> 
+  mutate(house_wo_ani_per_100 = 100 - dog_per_100 - cat_per_100 - etc_per_100) |> 
+  pivot_longer(cols = !District) |> 
+  mutate(value_r = round(value, digits = 0))
+  
 
 ## Fonts & Colors -------------------------------------------------
 font_add_google(name = "Oswald", family = "oswald")
@@ -61,6 +72,7 @@ text_col <- "grey10"
 major_grid_col <- "#bebebe"
 minor_grid_col <- "#d6d6d6"
 pal <- c("#5992B5", "#937455", "#bebebe","#bebebe" )
+pal2 <- c("#5992B5", "#937455", "#ffffff", "#bebebe")
 
 
 ## Texts --------------------------------------------------
@@ -119,7 +131,7 @@ main_theme <- theme(
 )
 
 
-# Plot: w vs. w/o dog or cat --------------------
+# Plot1: w vs. w/o dog or cat --------------------
 plot_waffle <- ggplot(data = tib_waffle, 
                       aes(fill = name, values = value)) +
   geom_pictogram(n_rows = 10,
@@ -151,7 +163,7 @@ plot_waffle <- ggplot(data = tib_waffle,
 plot_waffle
 
 
-## Save Plot ---------------------------------------
+## Save Plot1 ---------------------------------------
 ggsave(
   filename = "waffle.svg",
   plot = plot_waffle,
@@ -166,3 +178,30 @@ rsvg::rsvg_png(
   "waffle.svg", "waffle.png",
   width = 2900, height = 2300
 )
+
+
+## Plot2: Combine Two Plots into One Waffle
+plot_waffle_combine <- ggplot(data = tib_waffle2, 
+                      aes(fill = name, values = value_r)) +
+  geom_pictogram(n_rows = 10,
+                 aes(colour = name,
+                     label = name),
+                 family = "font-awesome",
+                 make_proportional = TRUE,
+                 flip = TRUE) +
+  scale_label_pictogram(
+    name = NULL,
+    values = c("cat", "dog", "", "house"),
+    labels = c("cat_per_100", "dog_per_100", "etc_per_100", "house_wo_ani_per_100")
+  ) +
+  scale_color_manual(values = pal2,
+                     labels = c("cat_per_100", "dog_per_100", "etc_per_100", "house_wo_ani_per_100")
+  ) +
+  guides(colour = "none", label = "none") +
+  coord_equal()+
+  labs(title = title,
+       subtitle = subtitle,
+       caption = caption) +
+  main_theme
+
+plot_waffle_combine
