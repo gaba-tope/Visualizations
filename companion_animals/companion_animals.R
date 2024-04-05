@@ -72,7 +72,7 @@ text_col <- "grey10"
 major_grid_col <- "#bebebe"
 minor_grid_col <- "#d6d6d6"
 pal <- c("#5992B5", "#937455", "#bebebe","#bebebe" )
-pal2 <- c("#5992B5", "#937455", "#ffffff", "#bebebe")
+pal2 <- c("#5992B5", "#937455", "#7ea57e", "#bebebe")
 
 
 ## Texts --------------------------------------------------
@@ -83,9 +83,18 @@ expl <- paste0("우리 통계청은 **2020년에 실시한 인구총조사**에�
 포함하여 표본조사를 실시하였습니다. ",
 "전체 표본 가구 중 **14.95%의 가구에서 반려동물을** 기르고 있었으며,
  그 중 <span style = 'color:#5992B5;'>**3.43%의 가구에서 고양이를**</span>, 
-<span style = 'color:#937455;'>**11.6%의 가구에서 개를</span>** 기르고 있었습니다. ")
+<span style = 'color:#937455;'>**11.6%의 가구에서 개를**</span> 기르고 있었습니다. ")
+expl2 <- paste0("우리 통계청은 **2020년에 실시한 인구총조사**에서 처음으로 **반려동물 양육 여부** 항목을
+포함하여 표본조사를 실시하였습니다. ",
+               "전체 표본 가구 중 **14.95%의 가구에서 반려동물을** 기르고 있었으며,
+ 그 중 <span style = 'color:#5992B5;'>**3.43%의 가구에서 고양이를**</span>, 
+<span style = 'color:#937455;'>**11.6%의 가구에서 개를**</span>, 
+<span style = 'color:#7ea57e;'>**0.72%의 가구에서 기타 반려동물을</span>** 기르고 있었습니다. ")
 caption <- paste0(expl,"<br><br>**자료**: 통계청,「인구총조사」, 2020. 거처의종류별/반려동물보유유형별가구-시도.
                   <br>**만든이**: ", social_caption)
+caption2 <- paste0(expl2,"<br><br>**자료**: 통계청,「인구총조사」, 2020. 거처의종류별/반려동물보유유형별가구-시도.
+                  <br>**만든이**: ", social_caption)
+
 
 ## Themes -------------------------------------------------
 main_theme <- theme(
@@ -191,7 +200,7 @@ plot_waffle_combine <- ggplot(data = tib_waffle2,
                  flip = TRUE) +
   scale_label_pictogram(
     name = NULL,
-    values = c("cat", "dog", "", "house"),
+    values = c("cat", "dog", "dove", "home"),
     labels = c("cat_per_100", "dog_per_100", "etc_per_100", "house_wo_ani_per_100")
   ) +
   scale_color_manual(values = pal2,
@@ -201,7 +210,24 @@ plot_waffle_combine <- ggplot(data = tib_waffle2,
   coord_equal()+
   labs(title = title,
        subtitle = subtitle,
-       caption = caption) +
+       caption = caption2) +
   main_theme
 
 plot_waffle_combine
+
+
+## Save Plot2--------------------------------
+ggsave(
+  filename = "waffle_c.svg",
+  plot = plot_waffle_combine,
+  device = "svg",
+  units = "px",
+  width = 2800,
+  height = 3000,
+  dpi = 290
+)
+
+rsvg::rsvg_png(
+  "waffle_c.svg", "waffle_c.png",
+  width = 2800, height = 3000
+)
