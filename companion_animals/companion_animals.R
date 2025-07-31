@@ -57,15 +57,17 @@ tib_waffle2 <- d_f |>
   mutate(value_r = round(value, digits = 0))
   
 
+
 ## Fonts & Colors -------------------------------------------------
 font_add_google(name = "Oswald", family = "oswald")
 font_add_google(name = "IBM Plex Sans KR", 
                 regular.wt = 400,
                 bold.wt = 700 ,
                 family = "ibm")
+font_add_google(name = "Noto Sans KR", family = "noto")
 sysfonts::font_add(family = "font-awesome", regular = "Font Awesome 6 Free-Solid-900.otf")
 showtext_auto()
-main_font <- "ibm"
+main_font <- "noto"
 
 bg_col <- "#eeeeee"
 text_col <- "grey10"
@@ -76,7 +78,7 @@ pal2 <- c("#5992B5", "#937455", "#7ea57e", "#bebebe")
 
 
 ## Texts --------------------------------------------------
-social_caption <- socialcap(gitname = "gaba-tope", twitname = "@tope_ezia", textfont = "ibm")
+social_caption <- socialcap(gitname = "gaba-tope", twitname = "@tope_ezia", textfont = "noto")
 title <- "멍멍 냐옹 찍찍 반려동물과 함께하는 삶"
 subtitle <- "반려동물과 함께 사는 가구 수 (100가구당)"
 expl <- paste0("우리 통계청은 **2020년에 실시한 인구총조사**에서 처음으로 **반려동물 양육 여부** 항목을
@@ -257,9 +259,9 @@ ggsave(
   plot = plot_waffle_combine,
   device = "svg",
   units = "px",
-  width = 2600,
-  height = 2800,
-  dpi = 290
+  width = 3000,
+  height = 3000,
+  dpi = 300
 )
 
 rsvg::rsvg_png(
